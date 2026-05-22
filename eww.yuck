@@ -66,8 +66,6 @@
     (metric :icon ""
             :font-size 0.8
       "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
-    (metric :icon "" "${round(EWW_RAM.used_mem_perc, 0)}%")
-    (metric :icon "" "${round(EWW_CPU.avg, 0)}%")
     (metric :icon "🔋" "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
     (box :class "metric" (date))
     (time)
@@ -107,7 +105,7 @@
 
 
 (deflisten volume :initial "0" "./audio.sh volume")
-(deflisten workspaces :initial '{"DP-2": [], "HDMI-A-1": []}' "./swayspaces.py")
+(deflisten workspaces :initial '[]' "./swayspaces.py")
 (deflisten window :inital "" "./active_window.sh")
 
 (defpoll hour :interval "1s" "date +%H:%M:%S")
