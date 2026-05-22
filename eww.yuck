@@ -68,6 +68,7 @@
       "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
     (metric :icon "" "${round(EWW_RAM.used_mem_perc, 0)}%")
     (metric :icon "" "${round(EWW_CPU.avg, 0)}%")
+    (metric :icon "🔋" "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
     (box :class "metric" (date))
     (time)
     (systray :orientation "h" :icon-size 15 :spacing 0)))
