@@ -1,0 +1,122 @@
+(defwidget bar []
+  (centerbox :orientation "h"
+    (box :class "top"
+         :halign "start"
+      (top)
+    )
+    (box :halign "center"
+         :class "middle"
+      (middle)
+    )
+    (box :halign "end"
+         :class "bottom"
+      (bottom)
+    )
+  )
+)
+
+(defwidget top []
+  (box :orientation "h"
+    (workspaces)))
+
+(defwidget workspaces []
+  (box :orientation "h" :class "workspaces"
+    (for wsp in workspaces
+      (button :class "${wsp.focused ? "active" : "inactive"}"
+              :onclick "swaymsg workspace ${wsp.name}"
+        {wsp.name}))))
+
+(defwidget middle []
+  (box :orientation "h"
+       :valign "center"
+       :space-evenly true
+    (selected_window)
+  )
+)
+
+(defwidget selected_window []
+  (box :orientation "h"
+    window
+  )
+)
+
+(defwidget time []
+  (box :orientation "h"
+       :class "time"
+    hour)
+)
+
+
+(defwidget metric [icon ?font-size]
+  (box :class "metric"
+       :orientation "h"
+    (label :class "metric-icon"
+           :style {font-size != "" ? "font-size: ${font-size}rem;" : ""}
+           :text icon)
+    (children)))
+
+(defwidget bottom []
+  (box :orientation "h"
+       :valign "end"
+       :space-evenly false
+       :spacing "0"
+
+    (network)
+    (volume)
+    (metric :icon ""
+            :font-size 0.8
+      "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
+    (metric :icon "" "${round(EWW_RAM.used_mem_perc, 0)}%")
+    (metric :icon "" "${round(EWW_CPU.avg, 0)}%")
+    (box :class "metric" (date))
+    (time)
+    (systray :orientation "h" :icon-size 15 :spacing 0)))
+
+(defwidget network []
+  (box :orientation "h"
+       :valign "fill"
+    wifi ))
+
+(defwidget volume []
+  (box :class "volume-metric"
+       :orientation "v"
+       :space-evenly false
+       :valign "fill"
+       :vexpand false
+    (scale :orientation "h"
+           :min 0
+           :max 100
+           :onchange "pamixer --set-volume $(echo {} | sed 's/\\..*//g')"
+           :value volume)
+    (eventbox :onscroll "if [ '{}' == 'up' ]; then pamixer -i 5; else pamixer -d 5; fi"
+              :vexpand true
+              :valign "fill"
+      (box :orientation "h"
+           :valign "fill"
+           :vexpand true
+        (button :onclick "pavucontrol &"
+          "${volume}%  ")
+          ))))
+
+
+(defwidget date []
+  (box :orientation "h"
+       :halign "center"
+    today ))
+
+
+(deflisten volume :initial "0" "./audio.sh volume")
+(deflisten workspaces :initial '{"DP-2": [], "HDMI-A-1": []}' "./swayspaces.py")
+(deflisten window :inital "" "./active_window.sh")
+
+(defpoll hour :interval "1s" "date +%H:%M:%S")
+(defpoll today :interval "10m" "date +'%a %d/%m/%Y'")
+(defpoll wifi :interval "1s" "./wifi.sh")
+
+(defwindow bar_1
+  :monitor '[0]'
+  :stacking "fg"
+  :geometry (geometry :x 0 :y 0 :width "100%" :height "25px" :anchor "top center")
+  :reserve (struts :distance "25px" :side "top")
+  :exclusive true
+  (bar))

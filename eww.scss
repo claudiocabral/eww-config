@@ -1,0 +1,115 @@
+* {
+  all: unset;
+}
+
+window {
+  background-color: #1d2021;
+  color: #a89984;
+  font-size: 14px;
+
+  & > * {
+    margin: 0px;
+  }
+  font-family: "Terminus (TTF)";
+}
+
+.workspaces {
+  button {
+    background: none;
+    margin: 5px;
+    padding-left: 0px;
+    &.inactive {
+      color: #888974;
+    }
+    &.active {
+      color: #8ec07c;
+    }
+    &.occupied {
+      font-size: 1.01rem;
+    }
+    &.empty {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.top {
+  margin-left: 10px;
+}
+
+.bottom {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.volume-metric {
+  min-width: 100px;
+  background-color: #1d2021;
+  margin-left: 5px;
+
+  .volume-top > scale {
+    margin-bottom: 5px;
+  }
+
+  slider {
+    all: unset;
+  }
+
+  scale trough highlight {
+    all: unset;
+    //background-color: #8ec07c;
+    background-color: #665c54;
+    border-bottom-right-radius: 5px;
+  }
+  scale trough {
+    all: unset;
+    background-color: #1d2021;
+    min-width: 3px;
+    min-height: 4px;
+  }
+}
+
+.large-symbol {
+  font-size: 0.8em;
+}
+
+.metric {
+  background-color: #1d2021;
+  padding: 5px 5px;
+}
+.metric-icon {
+  font-family: "Font Awesome 6 Free";
+  font-size: 0.7em;
+}
+
+.time {
+  color: #a89984;
+}
+
+// System Tray
+menu {
+  padding: 0px 0px;
+  background-color: #1d2021;
+
+  >menuitem {
+    font-size: 14px;
+    padding: 5px 5px;
+    //color: $foreground;
+
+    &:disabled label {
+      color: #928374;
+    }
+
+    &:hover {
+      background-color: #282828;
+    }
+  }
+
+  separator {
+    padding-top: 5px;
+
+    &:last-child {
+      padding: unset;
+    }
+  }
+}
