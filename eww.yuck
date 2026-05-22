@@ -115,7 +115,7 @@
 (defpoll wifi :interval "1s" "./wifi.sh")
 
 (defwindow bar_1
-  :monitor '[0]'
+  :monitor 0
   :stacking "fg"
   :geometry (geometry :x 0 :y 0 :width "100%" :height "25px" :anchor "top center")
   :reserve (struts :distance "25px" :side "top")
