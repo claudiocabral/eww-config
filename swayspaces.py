@@ -8,11 +8,11 @@ data = []
 
 def get_workspaces():
     output = subprocess.check_output(["swaymsg", "-t", "get_workspaces", "--raw"])
-    data = output.decode("utf-8")
-    return generate_workspace_data(data)
+    raw = output.decode("utf-8")
+    return generate_workspace_data(raw)
 
 def handle_init(change):
-    if not any(item["name"] == change["current"]["name"] for item in data):
+    if not any(item["name"] == change["current"].get("name") for item in data):
         data.append({
             "name": change["current"].get("name", "test"),
             "output": change["current"].get("output", "best"),
@@ -51,7 +51,7 @@ def handle_change(change):
         case "empty":
             return handle_empty(change)
         case _:
-            print(change["change"], sys.stderr)
+            print(change["change"], file=sys.stderr)
 
 
 
