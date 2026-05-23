@@ -98,9 +98,9 @@
     (scale :orientation "h"
            :min 0
            :max 100
-           :onchange "pamixer --set-volume $(echo {} | sed 's/\\..*//g')"
+            :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(echo {} | sed 's/\\..*//g' | awk '{print $1 >= 100 ? 100.5 : $1}')%"
            :value volume)
-    (eventbox :onscroll "if [ '{}' == 'up' ]; then pamixer -i 5; else pamixer -d 5; fi"
+    (eventbox :onscroll "if [ '{}' == 'up' ]; then wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; else wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; fi"
               :vexpand true
               :valign "fill"
       (box :orientation "h"
@@ -117,7 +117,7 @@
     today ))
 
 
-(deflisten volume :initial "0" "./audio.sh volume")
+(deflisten volume :initial "0" "./audio.sh")
 (deflisten workspaces :initial '[]' "./swayspaces.py")
 (deflisten window :inital "" "./active_window.sh")
 
