@@ -82,6 +82,14 @@ window {
   font-size: 0.7em;
 }
 
+.low-battery {
+  color: #fb4934;
+
+  .metric-icon {
+    color: #fb4934;
+  }
+}
+
 .time {
   color: #a89984;
 }

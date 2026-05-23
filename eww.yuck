@@ -47,8 +47,8 @@
 )
 
 
-(defwidget metric [icon ?font-size]
-  (box :class "metric"
+(defwidget metric [icon ?font-size ?extra-class]
+  (box :class {extra-class != "" ? "metric " + extra-class : "metric"}
        :orientation "h"
     (label :class "metric-icon"
            :style {font-size != "" ? "font-size: ${font-size}rem;" : ""}
@@ -67,19 +67,13 @@
             :font-size 0.8
       "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
     (metric
-      :icon "${if EWW_BATTERY.BAT0.status == "Charging" {
-                ""
-              } else if EWW_BATTERY.BAT0.capacity >= 80 {
-                ""
-              } else if EWW_BATTERY.BAT0.capacity >= 60 {
-                ""
-              } else if EWW_BATTERY.BAT0.capacity >= 40 {
-                ""
-              } else if EWW_BATTERY.BAT0.capacity >= 20 {
-                ""
-              } else {
-                ""
-              }}"
+      :icon "${EWW_BATTERY.BAT0.status == "Charging" ? ""
+             : EWW_BATTERY.BAT0.capacity >= 80 ? ""
+             : EWW_BATTERY.BAT0.capacity >= 60 ? ""
+             : EWW_BATTERY.BAT0.capacity >= 40 ? ""
+             : EWW_BATTERY.BAT0.capacity >= 20 ? ""
+             : ""}"
+      :extra-class {EWW_BATTERY.BAT0.capacity < 20 && EWW_BATTERY.BAT0.status != "Charging" ? "low-battery" : ""}
       "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
     (box :class "metric" (date))
     (time)
