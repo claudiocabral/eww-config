@@ -66,7 +66,21 @@
     (metric :icon ""
             :font-size 0.8
       "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
-    (metric :icon "🔋" "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
+    (metric
+      :icon "${if EWW_BATTERY.BAT0.status == "Charging" {
+                ""
+              } else if EWW_BATTERY.BAT0.capacity >= 80 {
+                ""
+              } else if EWW_BATTERY.BAT0.capacity >= 60 {
+                ""
+              } else if EWW_BATTERY.BAT0.capacity >= 40 {
+                ""
+              } else if EWW_BATTERY.BAT0.capacity >= 20 {
+                ""
+              } else {
+                ""
+              }}"
+      "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
     (box :class "metric" (date))
     (time)
     (systray :orientation "h" :icon-size 15 :spacing 0)))
