@@ -4,7 +4,7 @@ import subprocess
 import json
 import sys
 
-data = []
+data = {}
 
 def get_workspaces():
     output = subprocess.check_output(["swaymsg", "-t", "get_workspaces", "--raw"])
@@ -12,35 +12,31 @@ def get_workspaces():
     return generate_workspace_data(raw)
 
 def handle_init(change):
-    if not any(item["name"] == change["current"].get("name") for item in data):
-        data.append({
-            "name": change["current"].get("name", "test"),
+    name = change["current"].get("name")
+    if name and name not in data:
+        data[name] = {
+            "name": name,
             "output": change["current"].get("output", "best"),
             "focused": change["current"].get("focused", False),
-        });
+        }
 
 def handle_empty(change):
-    for item in data:
-        if item["name"] == change["current"]["name"]:
-            data.remove(item)
+    data.pop(change["current"]["name"], None)
 
 def handle_focus(change):
-    for item in data:
-        if ("current" in change
-            and change["current"] is not None
-            and item["name"] == change["current"]["name"]):
-            item["output"] =  change["current"]["output"]
-            item["focused"] = change["current"]["focused"]
-            item["focused"] = (change["current"]["focused"] or
-                               any(node.get("focused") for node in
-                                   change["current"]["nodes"]))
-        if ("old" in change
-            and change["old"] is not None
-            and item["name"] == change["old"].get("name", "")):
-                item["output"] =  change["old"]["output"]
-                item["focused"] = (change["old"]["focused"] or
-                                   any(node.get("focused") for node in
-                                       change["old"]["nodes"]))
+    cur = change.get("current")
+    if cur is not None and cur["name"] in data:
+        data[cur["name"]]["output"] = cur["output"]
+        data[cur["name"]]["focused"] = (cur.get("focused") or
+                                        any(n.get("focused") for n in
+                                            cur.get("nodes", [])))
+    old = change.get("old")
+    if old is not None and old.get("name") in data:
+        name = old["name"]
+        data[name]["output"] = old["output"]
+        data[name]["focused"] = (old.get("focused") or
+                                 any(n.get("focused") for n in
+                                     old.get("nodes", [])))
 
 def handle_change(change):
     match change["change"]:
@@ -60,16 +56,18 @@ def parse(line) -> dict:
     if isinstance(workspaces, dict):
         return handle_change(workspaces)
     for wsp in workspaces:
-        data.append({
-            "name": wsp.get("name", "test"),
-            "output": wsp.get("output", "best"),
-            "focused": wsp.get("focused", False),
-        })
+        name = wsp.get("name")
+        if name:
+            data[name] = {
+                "name": name,
+                "output": wsp.get("output", "best"),
+                "focused": wsp.get("focused", False),
+            }
 
 def generate_workspace_data(line) -> dict:
     parse(line)
-    data.sort(key=lambda item: item["name"])
-    return json.dumps(data)
+    items = sorted(data.values(), key=lambda x: x["name"])
+    return json.dumps(items)
 
 if __name__ == "__main__":
     process = subprocess.Popen(
@@ -81,7 +79,8 @@ if __name__ == "__main__":
         exit(1)
     print(get_workspaces(), flush=True)
     while True:
-        line = process.stdout.readline().decode("utf-8")
-        #if line == "":
-        #    break
+        line = process.stdout.readline()
+        if not line:
+            break
+        line = line.decode("utf-8")
         print(generate_workspace_data(line), flush=True)
