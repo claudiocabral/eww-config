@@ -66,18 +66,23 @@
     (metric :icon ""
             :font-size 0.8
       "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
-    (metric
-      :icon "${EWW_BATTERY.BAT0.status == "Charging" ? ""
-             : EWW_BATTERY.BAT0.capacity >= 80 ? ""
-             : EWW_BATTERY.BAT0.capacity >= 60 ? ""
-             : EWW_BATTERY.BAT0.capacity >= 40 ? ""
-             : EWW_BATTERY.BAT0.capacity >= 20 ? ""
-             : ""}"
-      :extra-class {EWW_BATTERY.BAT0.capacity < 20 && EWW_BATTERY.BAT0.status != "Charging" ? "low-battery" : ""}
-      "${round(EWW_BATTERY.BAT0.capacity, 0)}%")
+    (batteries)
     (box :class "metric" (date))
     (time)
     (systray :orientation "h" :icon-size 15 :spacing 0)))
+
+(defwidget batteries []
+  (box :orientation "h"
+    (for bat in {jq((EWW_BATTERY ?: "{}"), "to_entries | map(select(.value | type == \"object\")) | map({name: .key, capacity: .value.capacity, status: .value.status})")}
+      (metric
+        :icon "${bat.status == "Charging" ? ""
+               : bat.capacity >= 80 ? ""
+               : bat.capacity >= 60 ? ""
+               : bat.capacity >= 40 ? ""
+               : bat.capacity >= 20 ? ""
+               : ""}"
+        :extra-class {bat.capacity < 20 && bat.status != "Charging" ? "low-battery" : ""}
+        "${round(bat.capacity, 0)}%"))))
 
 (defwidget network []
   (box :orientation "h"
