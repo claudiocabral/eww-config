@@ -21,7 +21,7 @@
 
 (defwidget workspaces []
   (box :orientation "h" :class "workspaces"
-    (for wsp in workspaces
+    (for wsp in {jq(workspaces, ".workspaces")}
       (button :class "${wsp.focused ? "active" : "inactive"}"
               :onclick "swaymsg workspace ${wsp.name}"
         {wsp.name}))))
@@ -36,7 +36,7 @@
 
 (defwidget selected_window []
   (box :orientation "h"
-    window
+    "${workspaces.active_window}"
   )
 )
 
@@ -118,8 +118,7 @@
 
 
 (deflisten volume :initial "0" "./audio.sh")
-(deflisten workspaces :initial '[]' "./swayspaces.py")
-(deflisten window :inital "" "./active_window.sh")
+(deflisten workspaces :initial '{"workspaces":[],"active_window":""}' "./swayspaces.py")
 
 (defpoll hour :interval "1s" "date +%H:%M:%S")
 (defpoll today :interval "10m" "date +'%a %d/%m/%Y'")
