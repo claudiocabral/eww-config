@@ -1,0 +1,13 @@
+#export SDL_VIDEODRIVER=wayland
+export XDG_CONFIG_HOME=$HOME/.config
+export MOZ_ENABLE_WAYLAND=1
+export SDL_VIDEODRIVER=x11
+export CLUTTER_BACKEND=wayland
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+export GTK_IM_MODULE=fcitx
+export NPM_CONFIG_PATH=~/.npm
+export XDG_CURRENT_DESKTOP=sway
+export PATH=$PATH:$HOME/local/bin:$HOME/.local/bin
+eval `ssh-agent`
+systemd-run --user --scope --unit=sway sway
