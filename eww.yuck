@@ -63,9 +63,8 @@
 
     (network)
     (volume)
-    (metric :icon ""
-            :font-size 0.8
-      "${round((1 - (EWW_DISK["/"].free / EWW_DISK["/"].total)) * 100, 0)}%")
+    (disk :path "/")
+    (disk :path "/home")
     (batteries)
     (box :class "metric" (date))
     (time)
@@ -83,6 +82,14 @@
                : ""}"
         :extra-class {bat.capacity < 20 && bat.status != "Charging" ? "low-battery" : ""}
         "${round(bat.capacity, 0)}%"))))
+
+(defwidget disk [path]
+  (box :orientation "h"
+       :valign "fill"
+    (metric :icon " ${path}"
+            :font-size 0.8
+      "${round((1 - (EWW_DISK[path].free / EWW_DISK[path].total)) * 100, 0)}%")
+    ))
 
 (defwidget network []
   (box :orientation "h"

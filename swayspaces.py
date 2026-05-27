@@ -15,6 +15,31 @@ def get_workspaces():
     return generate_output(raw)
 
 
+def find_focused(data):
+    if not data.get("focused"):
+        return None
+    for node in data.get("nodes", []) + data.get("floating_nodes", []):
+        result = find_focused(node)
+        if result:
+            return result
+    return data
+
+
+def get_focused_container():
+    global active_window, focused_container_id
+    try:
+        output = subprocess.check_output(
+            ["swaymsg", "-t", "get_tree", "--raw"]
+        )
+        tree = json.loads(output.decode("utf-8"))
+        focused = find_focused(tree)
+        if focused:
+            focused_container_id = focused.get("id")
+            active_window = focused.get("name") or ""
+    except Exception:
+        pass
+
+
 def handle_init(change):
     name = change["current"].get("name")
     if name and name not in data:
@@ -110,6 +135,7 @@ if __name__ == "__main__":
     if process.stdout is None:
         print("Error: could not subscribe to sway events")
         exit(1)
+    get_focused_container()
     print(get_workspaces(), flush=True)
     while True:
         line = process.stdout.readline()
