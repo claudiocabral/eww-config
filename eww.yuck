@@ -64,7 +64,6 @@
     (network)
     (volume)
     (disk :path "/")
-    (disk :path "/home")
     (batteries)
     (box :class "metric" (date))
     (time)
@@ -82,6 +81,11 @@
                : ""}"
         :extra-class {bat.capacity < 20 && bat.status != "Charging" ? "low-battery" : ""}
         "${round(bat.capacity, 0)}%"))))
+
+(defwidget disks []
+  (box :orientation "h"
+    (for disk in {jq((EWW_DISK ?: "{}"), "to_entries | map(.key)")}
+      (disk :path {disk}))))
 
 (defwidget disk [path]
   (box :orientation "h"
