@@ -63,7 +63,7 @@
 
     (network)
     (volume)
-    (disk :path "/")
+    (disks)
     (batteries)
     (box :class "metric" (date))
     (time)
@@ -84,16 +84,15 @@
 
 (defwidget disks []
   (box :orientation "h"
-    (for disk in {jq((EWW_DISK ?: "{}"), "to_entries | map(.key)")}
-      (disk :path {disk}))))
+    (for disk in {jq((EWW_DISK ?: "{}"), "to_entries | map(select(.key | contains(\"boot\") | not)) | map({key: .key, pct: ((1 - (.value.free / .value.total)) * 100 | round)})")}
+      (disk :path "${disk.key}" :used "${disk.pct}"))))
 
-(defwidget disk [path]
+(defwidget disk [path used]
   (box :orientation "h"
        :valign "fill"
     (metric :icon " ${path}"
             :font-size 0.8
-      "${round((1 - (EWW_DISK[path].free / EWW_DISK[path].total)) * 100, 0)}%")
-    ))
+      "${used}%")))
 
 (defwidget network []
   (box :orientation "h"
