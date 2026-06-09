@@ -1,0 +1,11 @@
+[Unit]
+Description=Sway session
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
+
+[Unit]
+Description=Sway session
+BindsTo=sway.scope
+After=sway.scope
+Wants=graphical-session.target
