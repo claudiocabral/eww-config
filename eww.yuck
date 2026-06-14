@@ -109,7 +109,7 @@
            :min 0
            :max 100
             :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(echo {} | sed 's/\\..*//g' | awk '{print $1 >= 100 ? 100.5 : $1}')%"
-           :value volume)
+           :value {jq(volume, ".volume")})
     (eventbox :onscroll "if [ '{}' == 'up' ]; then wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+; else wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; fi"
               :vexpand true
               :valign "fill"
@@ -117,7 +117,9 @@
            :valign "fill"
            :vexpand true
         (button :onclick "pavucontrol &"
-          "${volume}%  ")
+          (box :orientation "h" :space-evenly false :spacing 8 :halign "center" :valign "center"
+            (label :text "${jq(volume, ".volume")}%")
+            (label :text audio_icon :class "volume-icon")))
           ))))
 
 
@@ -127,7 +129,8 @@
     today ))
 
 
-(deflisten volume :initial "0" "./audio.sh")
+(deflisten volume :initial '{"volume":0}' "./audio.sh volume")
+(deflisten audio_icon :initial "" "./audio.sh icon")
 (deflisten workspaces :initial '{"workspaces":[],"active_window":""}' "./swayspaces.py")
 
 (defpoll hour :interval "1s" "date +%H:%M:%S")
