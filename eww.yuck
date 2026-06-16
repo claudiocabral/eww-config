@@ -35,8 +35,8 @@
 )
 
 (defwidget selected_window []
-  (box :orientation "h"
-    "${workspaces.active_window}"
+  (label :text "${workspaces.active_window}"
+         :truncation "end"
   )
 )
 

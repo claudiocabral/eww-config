@@ -9,6 +9,12 @@ active_window = ""
 focused_container_id = None
 
 
+def truncate(s, max_len=80):
+    if len(s) > max_len:
+        return s[: max_len - 3] + "..."
+    return s
+
+
 def get_workspaces():
     output = subprocess.check_output(["swaymsg", "-t", "get_workspaces", "--raw"])
     raw = output.decode("utf-8")
@@ -35,7 +41,7 @@ def get_focused_container():
         focused = find_focused(tree)
         if focused:
             focused_container_id = focused.get("id")
-            active_window = focused.get("name") or ""
+            active_window = truncate(focused.get("name") or "")
     except Exception:
         pass
 
@@ -114,9 +120,9 @@ def handle_event(line):
         cid = container.get("id")
         if change == "focus":
             focused_container_id = cid
-            active_window = container.get("name", "")
+            active_window = truncate(container.get("name", ""))
         elif change == "title" and cid == focused_container_id:
-            active_window = container.get("name", "")
+            active_window = truncate(container.get("name", ""))
         elif change == "close" and container.get("focused"):
             focused_container_id = None
             active_window = ""
