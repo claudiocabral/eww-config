@@ -15,8 +15,12 @@ get_audio_info() {
     if command -v pactl &>/dev/null; then
         DEFAULT_SINK=$(pactl get-default-sink 2>/dev/null)
         if [ -n "$DEFAULT_SINK" ]; then
-            ACTIVE_PORT=$(pactl list sinks 2>/dev/null | grep -A 40 "^[[:space:]]*Name:[[:space:]]*${DEFAULT_SINK}$" | grep "Active Port:" | awk '{print $NF}')
-            if echo "$ACTIVE_PORT" | grep -qi "headphone"; then
+            SINK_INFO=$(pactl list sinks 2>/dev/null | grep -A 40 "^[[:space:]]*Name:[[:space:]]*${DEFAULT_SINK}$")
+            ACTIVE_PORT=$(echo "$SINK_INFO" | grep "Active Port:" | awk '{print $NF}')
+            SINK_NAME=$(echo "$SINK_INFO" | grep "^[[:space:]]*Name:" | awk '{print $NF}')
+            if echo "$ACTIVE_PORT" | grep -qiE "headphone|a2dp|headset|handsfree"; then
+                HEADPHONE=true
+            elif echo "$SINK_NAME" | grep -qi "bluez"; then
                 HEADPHONE=true
             fi
         fi
